@@ -1,0 +1,9 @@
+# This is Git's per-user configuration file.
+[alias]
+        h = log -p --follow
+	s = status
+	co = checkout
+	cm = commit -m
+	po = push origin
+	pr = pull --rebase
+	amend = commit --amend
