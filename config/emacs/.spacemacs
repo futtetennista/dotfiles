@@ -31,10 +31,12 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     markdown
-     yaml
-     haskell
+     nginx
+     python
+     html
      purescript
+     sql
+     haskell
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -47,6 +49,7 @@ values."
      ;; better-defaults
      emacs-lisp
      git
+     markdown
      ;; org
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -56,6 +59,7 @@ values."
      ;; version-control
      plantuml
      themes-megapack
+     yaml
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -66,9 +70,11 @@ values."
      ag
      neotree
      psc-ide
+     xclip
+     engine-mode
      )
    ;; A list of packages that cannot be updated.
-   ydotspacemacs-frozen-packages '()
+   dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages
    '(
@@ -118,7 +124,7 @@ values."
    ;; (default 'vim)
    dotspacemacs-editing-style 'hybrid
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
-   dotspacemacs-verbose-loading t
+   dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
    ;; banner, `random' chooses a random text banner in `core/banners'
@@ -142,8 +148,8 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(phoenix-dark-mono
-                         spacemacs-light
-                         spacemacs-dark)
+                         spacemacs-dark
+                         spacemacs-ligh)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -175,7 +181,7 @@ values."
    ;; and TAB or <C-m> and RET.
    ;; In the terminal, these pairs are generally indistinguishable, so this only
    ;; works in the GUI. (default nil)
-   dotspacemacs-distinguish-gui-tab t
+   dotspacemacs-distinguish-gui-tab nil
    ;; If non nil `Y' is remapped to `y$' in Evil states. (default nil)
    dotspacemacs-remap-Y-to-y$ nil
    ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
@@ -329,9 +335,7 @@ you should place your code here."
   (setq create-lockfiles nil)
 
   ;; neotree
-  (global-set-key (kbd "<f8>") 'neotree-toggle)
-  (global-set-key (kbd "<C-f8>") 'neotree-find)
-  (setq neo-smart-open t)
+  (setq neo-smart-open t) ;; https://www.emacswiki.org/emacs/NeoTree
   (setq projectile-switch-project-action 'neotree-projectile-action)
 
   ;; psc-ide
@@ -340,44 +344,61 @@ you should place your code here."
               (psc-ide-mode)
               (company-mode)
               (flycheck-mode)
-              (turn-on-purescript-indentation)))
+              ;; (turn-on-purescript-indentation)
+              (make-variable-buffer-local 'find-tag-default-function)
+              (setq find-tag-default-function (lambda () (current-word t t)))
+            )
+  )
   (setq psc-ide-use-npm-bin t)
   ;; (customize-set-variable 'psc-ide-rebuild-on-save t)
 
   ;; haskell-mode
   (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
-  ;; (custom-set-variables '(haskell-stylish-on-save t))
 
-  (windmove-default-keybindings)
+  ;; (windmove-default-keybindings)
+
+  (desktop-save-mode 1)
+  ;; https://github.com/syl20bnr/spacemacs/issues/2222#issuecomment-381845232QQ
+  (xterm-mouse-mode -1)
 
   (unless (display-graphic-p)
     (require 'evil-terminal-cursor-changer)
     (evil-terminal-cursor-changer-activate) ; or (etcc-on)
-    )
+  )
 
-  ;; bindings
+  ;; https://github.com/syl20bnr/spacemacs/issues/5936
+  ;; (dotspacemacs-distinguish-gui-tab t)
+
+  ;; (global-set-key (kbd "<C-A>") 'evil-numbers/inc-at-pt)
+  ;; (global-set-key (kbd "<C-a>") 'evil-numbers/dec-at-pt)
+  (indent-guide-global-mode 1)
+  (xclip-mode 1)
+
+  ;; Macros
+  ;; Reload modules in 'GHCi' buffer
+  (fset 'ghci-reload
+        [escape ?: ?w ?\C-m ?  ?1 ?\C-x ?b ?g ?h ?c ?i ?\C-m ?\C-l ?i ?: ?r ?\C-m escape])
+  (global-set-key (kbd "C-c r") 'ghci-reload)
+
+  (fset 'build-engine
+        [escape ?: ?w ?\C-m ?  ?1 ?\C-x ?b ?e ?n ?g ?i ?n ?e ?\C-m ?i ?\C-m ?\C-l ?s ?b ?f ?  ?& ?& ?  ?. ?/ ?d ?e ?v ?- ?\C-i ?r ?u ?n ?- ?0 ?b ?\C-? ?\C-? ?b ?a ?\C-i ?\C-m escape])
+ (global-set-key (kbd "C-c e") 'build-engine)
+
+  ;; Compile admin app in 'admin' buffer
+  (fset 'admin-compile
+        [escape ?: ?w ?\C-m ?  ?1 ?\C-x ?b ?a ?d ?m ?i ?n ?\C-m ?\C-l ?i ?n ?p ?m ?  ?r ?u ?n ?  ?b ?u ?i ?l ?d ?  ?c ?o ?m ?p ?i ?l ?e ?  ?a ?d ?m ?i ?n ?\C-m escape])
+  (global-set-key (kbd "C-c a") 'admin-compile)
+
+  ;; Execute last command
+  (fset 'last-command-repeat
+        [escape ?: ?w ?\C-m ?  ?1 ?i ?\C-\[ ?O ?A ?\C-m escape])
+  (global-set-key (kbd "C-c l") 'last-command-repeat)
+
+  ;; Key bindings
   (spacemacs/set-leader-keys "jt" 'find-tag)
-  (define-key key-translation-map (kbd "<f9> u <right>") (kbd "→"))
-  (global-set-key (kbd "C-c r") 'ghci-save-module-and-reload)
-
-  ;; macros
-  (fset 'ghci-save-module-and-reload
-        [escape ?: ?w return ?  ?1 ?\C-l ?i ?: ?r return escape])
-
-  ;; Setting up Fonts for use with Agda/PLFA
-  ;;
-  ;; default to DejaVu Sans Mono,
-  ;; (set-face-attribute 'default nil
-	;; 	                  :family "DejaVu Sans Mono"
-	;; 	                  :height 120
-	;; 	                  :weight 'normal
-	;; 	                  :width  'normal)
-
-  ;; ;; fix \:
-  ;; (set-fontset-font "fontset-default"
-	;; 	                (cons (decode-char 'ucs #x2982)
-	;; 		                    (decode-char 'ucs #x2982))
-	;; 	                "STIX")
+  (global-set-key (kbd "<f8>") 'neotree-toggle)
+  (global-set-key (kbd "<S-f8>") 'neotree)
+  (global-set-key (kbd "<C-f8>") 'neotree-find)
 
   )
 
@@ -391,16 +412,28 @@ you should place your code here."
  '(ag-highlight-search t)
  '(ag-ignore-list
    (quote
-    ("TAGS" ".git/" ".stack-work/" "build/" "node_modiles/")))
- '(ag-project-root-function nil)
- '(ansi-color-names-vector
-   ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
+    ("TAGS" ".stack-work/" ".git/" ".psa/" ".pulp-cache/" ".repl/" ".test/")))
+ '(ag-reuse-buffers nil)
+ '(ag-reuse-window nil)
  '(evil-want-Y-yank-to-eol nil)
+ '(helm-ag-fuzzy-match t)
+ '(helm-ag-use-agignore t)
+ '(indent-guide-global-mode t)
  '(package-selected-packages
    (quote
-    (psci purescript-mode zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme evil-terminal-cursor-changer ws-butler winum volatile-highlights vi-tilde-fringe uuidgen toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode paradox spinner org-bullets open-junk-file move-text lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation google-translate golden-ratio fill-column-indicator fancy-battery eyebrowse expand-region evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu eval-sexp-fu highlight dumb-jump f define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol aggressive-indent adaptive-wrap ace-link yaml-mode evil-surround plantuml-mode ag psc-ide dash-functional neotree flx-ido smeargle orgit mmm-mode markdown-toc s markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit ghub with-editor company-statistics company-cabal auto-yasnippet ac-ispell auto-complete intero flycheck dash hlint-refactor hindent haskell-snippets yasnippet company-ghci company-ghc ghc company haskell-mode cmm-mode which-key wgrep use-package smex pcre2el macrostep ivy-hydra hydra helm-make helm helm-core popup flx exec-path-from-shell evil-visualstar evil-escape evil goto-chg undo-tree elisp-slime-nav diminish counsel-projectile projectile pkg-info epl counsel swiper ivy bind-map bind-key auto-compile packed async ace-window avy)))
- '(plantuml-jar-path "/Users/futtetennista/.local/bin/plantuml.jar")
- '(psc-ide-rebuild-on-save nil t))
+    (nginx-mode company-anaconda yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode cython-mode anaconda-mode pythonic engine-mode xclip company-web web-mode tagedit slim-mode scss-mode sass-mode pug-mode haml-mode emmet-mode web-completion-data darktooth-theme zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme psci purescript-mode helm-ag sql-indent evil-terminal-cursor-changer simpleclip yaml-mode ws-butler winum volatile-highlights vi-tilde-fringe uuidgen toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode paradox spinner org-bullets open-junk-file move-text lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation google-translate golden-ratio fill-column-indicator fancy-battery eyebrowse expand-region evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu eval-sexp-fu highlight dumb-jump f define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol aggressive-indent adaptive-wrap ace-link org-plus-contrib let-alist plantuml-mode ag psc-ide dash-functional neotree flx-ido smeargle orgit mmm-mode markdown-toc s markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit ghub with-editor company-statistics company-cabal auto-yasnippet ac-ispell auto-complete intero flycheck dash hlint-refactor hindent haskell-snippets yasnippet company-ghci company-ghc ghc company haskell-mode cmm-mode which-key wgrep use-package smex pcre2el macrostep ivy-hydra hydra helm-make helm helm-core popup flx exec-path-from-shell evil-visualstar evil-escape evil goto-chg undo-tree elisp-slime-nav diminish counsel-projectile projectile pkg-info epl counsel swiper ivy bind-map bind-key auto-compile packed async ace-window avy)))
+ '(projectile-globally-ignored-files (quote ("TAGS")))
+ '(projectile-tags-command "hasktags -eR %s")
+ '(psc-ide-add-import-on-completion t t)
+ '(psc-ide-output-directory "build/")
+ '(psc-ide-port 15375)
+ '(psc-ide-rebuild-on-save nil t)
+ '(psc-ide-source-globs
+   (quote
+    ("lib/**/*.purs" "apps/**/**/*.purs" "test/**/*.purs" "bower_components/purescript-*/src/**/*.purs")))
+ '(safe-local-variable-values
+   (quote
+    ((psc-ide-source-globs "lib/**/*.purs" "apps/public/**/*.purs" "apps/admin/**/*.purs" "apps/funds/**/*/purs" "test/**/*.purs" "bower_components/purescript-*/src/**/*.purs")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
