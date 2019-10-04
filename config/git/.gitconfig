@@ -5,6 +5,6 @@
 	co = checkout
 	cm = commit -m
 	po = push origin
-	pr = pull --rebase
+	pr = pull -r -p
 	amend = commit --amend
 	size = count-objects -vH
