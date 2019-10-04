@@ -7,3 +7,4 @@
 	po = push origin
 	pr = pull --rebase
 	amend = commit --amend
+	size = count-objects -vH
