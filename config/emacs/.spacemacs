@@ -34,7 +34,7 @@ values."
      nginx
      python
      html
-     purescript
+     ;; purescript
      sql
      haskell
      ;; ----------------------------------------------------------------
@@ -60,7 +60,7 @@ values."
      plantuml
      themes-megapack
      yaml
-     )
+    )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -72,14 +72,14 @@ values."
      psc-ide
      xclip
      engine-mode
-     )
+    )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages
    '(
      flx-ido
-     )
+    )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
