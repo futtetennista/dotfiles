@@ -31,6 +31,10 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     asciidoc
+     typescript
+     javascript
+     terraform
      nginx
      python
      html
@@ -339,16 +343,16 @@ you should place your code here."
   (setq projectile-switch-project-action 'neotree-projectile-action)
 
   ;; psc-ide
-  (add-hook 'purescript-mode-hook
-            (lambda ()
-              (psc-ide-mode)
-              (company-mode)
-              (flycheck-mode)
-              ;; (turn-on-purescript-indentation)
-              (make-variable-buffer-local 'find-tag-default-function)
-              (setq find-tag-default-function (lambda () (current-word t t)))
-            )
-  )
+  ;; (add-hook 'purescript-mode-hook
+  ;;           (lambda ()
+  ;;             (psc-ide-mode)
+  ;;             (company-mode)
+  ;;             (flycheck-mode)
+  ;;             ;; (turn-on-purescript-indentation)
+  ;;             (make-variable-buffer-local 'find-tag-default-function)
+  ;;             (setq find-tag-default-function (lambda () (current-word t t)))
+  ;;           )
+  ;; )
   (setq psc-ide-use-npm-bin t)
   ;; (customize-set-variable 'psc-ide-rebuild-on-save t)
 
@@ -375,6 +379,10 @@ you should place your code here."
   (xclip-mode 1)
 
   ;; Macros
+  (fset 'haskell_add_language_pragma
+        [?i ?\{ ?- ?# ?  ?L ?a ?n ?a ?\C-? ?\C-? ?\C-? ?A ?N ?G ?U ?A ?G ?E ? ])
+  (global-set-key (kbd "C-c h l") 'haskell_add_language_pragma)
+
   ;; Reload modules in 'GHCi' buffer
   (fset 'ghci-reload
         [escape ?: ?w ?\C-m ?  ?1 ?\C-x ?b ?g ?h ?c ?i ?\C-m ?\C-l ?i ?: ?r ?\C-m escape])
@@ -384,6 +392,32 @@ you should place your code here."
   (fset 'last-command-repeat
         [escape ?: ?w ?\C-m ?  ?1 ?i ?\C-\[ ?O ?A ?\C-m escape])
   (global-set-key (kbd "C-c l") 'last-command-repeat)
+
+  ;; GHCi-reload
+  (fset 'ghci-reload-2
+        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?2])
+  (global-set-key (kbd "C-c 2 r") 'ghci-reload-2)
+  (fset 'ghci-reload-3
+        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?3])
+  (global-set-key (kbd "C-c 3 r") 'ghci-reload-3)
+  (fset 'ghci-reload-4
+        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?4])
+  (global-set-key (kbd "C-c 4 r") 'ghci-reload-4)
+  (fset 'ghci-reload-5
+        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?5])
+  (global-set-key (kbd "C-c 5 r") 'ghci-reload-5)
+  (fset 'ghci-reload-6
+        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?6])
+  (global-set-key (kbd "C-c 6 r") 'ghci-reload-6)
+  (fset 'ghci-reload-7
+        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?7])
+  (global-set-key (kbd "C-c 7 r") 'ghci-reload-7)
+  (fset 'ghci-reload-8
+        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?8])
+  (global-set-key (kbd "C-c 8 r") 'ghci-reload-8)
+  (fset 'ghci-reload-9
+        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?9])
+  (global-set-key (kbd "C-c 9 r") 'ghci-reload-9)
 
   ;; Key bindings
   (spacemacs/set-leader-keys "jt" 'find-tag)
@@ -410,9 +444,10 @@ you should place your code here."
  '(helm-ag-fuzzy-match t)
  '(helm-ag-use-agignore t)
  '(indent-guide-global-mode t)
+ '(js-indent-level 2)
  '(package-selected-packages
    (quote
-    (nginx-mode company-anaconda yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode cython-mode anaconda-mode pythonic engine-mode xclip company-web web-mode tagedit slim-mode scss-mode sass-mode pug-mode haml-mode emmet-mode web-completion-data darktooth-theme zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme psci purescript-mode helm-ag sql-indent evil-terminal-cursor-changer simpleclip yaml-mode ws-butler winum volatile-highlights vi-tilde-fringe uuidgen toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode paradox spinner org-bullets open-junk-file move-text lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation google-translate golden-ratio fill-column-indicator fancy-battery eyebrowse expand-region evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu eval-sexp-fu highlight dumb-jump f define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol aggressive-indent adaptive-wrap ace-link org-plus-contrib let-alist plantuml-mode ag psc-ide dash-functional neotree flx-ido smeargle orgit mmm-mode markdown-toc s markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit ghub with-editor company-statistics company-cabal auto-yasnippet ac-ispell auto-complete intero flycheck dash hlint-refactor hindent haskell-snippets yasnippet company-ghci company-ghc ghc company haskell-mode cmm-mode which-key wgrep use-package smex pcre2el macrostep ivy-hydra hydra helm-make helm helm-core popup flx exec-path-from-shell evil-visualstar evil-escape evil goto-chg undo-tree elisp-slime-nav diminish counsel-projectile projectile pkg-info epl counsel swiper ivy bind-map bind-key auto-compile packed async ace-window avy)))
+    (bazel-mode adoc-mode gnu-elpa-keyring-update markup-faces tide slack typescript-mode org-pomodoro livid-mode json-mode js2-refactor company-tern web-beautify skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode js-doc tern coffee-mode hcl-mode nginx-mode company-anaconda yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode cython-mode anaconda-mode pythonic engine-mode xclip company-web web-mode tagedit slim-mode scss-mode sass-mode pug-mode haml-mode emmet-mode web-completion-data darktooth-theme zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme psci purescript-mode helm-ag sql-indent evil-terminal-cursor-changer simpleclip yaml-mode ws-butler winum volatile-highlights vi-tilde-fringe uuidgen toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode paradox spinner org-bullets open-junk-file move-text lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation google-translate golden-ratio fill-column-indicator fancy-battery eyebrowse expand-region evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu eval-sexp-fu highlight dumb-jump f define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol aggressive-indent adaptive-wrap ace-link org-plus-contrib let-alist plantuml-mode ag psc-ide dash-functional neotree flx-ido smeargle orgit mmm-mode markdown-toc s markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit ghub with-editor company-statistics company-cabal auto-yasnippet ac-ispell auto-complete intero flycheck dash hlint-refactor hindent haskell-snippets yasnippet company-ghci company-ghc ghc company haskell-mode cmm-mode which-key wgrep use-package smex pcre2el macrostep ivy-hydra hydra helm-make helm helm-core popup flx exec-path-from-shell evil-visualstar evil-escape evil goto-chg undo-tree elisp-slime-nav diminish counsel-projectile projectile pkg-info epl counsel swiper ivy bind-map bind-key auto-compile packed async ace-window avy)))
  '(projectile-globally-ignored-files (quote ("TAGS")))
  '(projectile-tags-command "hasktags -eR %s")
  '(psc-ide-add-import-on-completion t t)
@@ -424,7 +459,8 @@ you should place your code here."
     ("lib/**/*.purs" "apps/**/**/*.purs" "test/**/*.purs" "bower_components/purescript-*/src/**/*.purs")))
  '(safe-local-variable-values
    (quote
-    ((psc-ide-source-globs "lib/**/*.purs" "apps/public/**/*.purs" "apps/admin/**/*.purs" "apps/funds/**/*/purs" "test/**/*.purs" "bower_components/purescript-*/src/**/*.purs")))))
+    ((psc-ide-source-globs "lib/**/*.purs" "apps/public/**/*.purs" "apps/admin/**/*.purs" "apps/funds/**/*/purs" "test/**/*.purs" "bower_components/purescript-*/src/**/*.purs"))))
+ '(typescript-indent-level 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
