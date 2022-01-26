@@ -31,30 +31,25 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     asciidoc
-     typescript
      javascript
-     terraform
-     nginx
-     python
      html
-     ;; purescript
      sql
+     markdown
+     yaml
      haskell
+     ;; purescript
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      ivy
-     ;; auto-completion
      (auto-completion
        (haskell :variables haskell-completion-backend 'company-ghci))
      ;; better-defaults
      emacs-lisp
      git
-     markdown
-     ;; org
+     org
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -63,8 +58,9 @@ values."
      ;; version-control
      plantuml
      themes-megapack
-     yaml
-    )
+     auto-completion
+     python
+     )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -73,17 +69,15 @@ values."
    '(
      ag
      neotree
-     psc-ide
-     xclip
-     engine-mode
-    )
+     ;; psc-ide
+     )
    ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '()
+   ydotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages
    '(
      flx-ido
-    )
+     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -93,12 +87,42 @@ values."
    ;; Spacemacs and never uninstall them. (default is `used-only')
    dotspacemacs-install-packages 'used-only))
 
+(with-eval-after-load 'org
+  ;; (setq org-todo-keywords
+  ;;   '((sequence "TODO(t!)" "STARTED(n@!)" "BLOCKED(b@!)" "DELEGATED(D!)" "|" "CANCELLED(c!)" "DONE(d!)")))
+
+  ;; '(progn
+  ;;    (define-prefix-command 'org-todo-state-map)
+
+  ;;    (define-key org-mode-map "\C-cx" 'org-todo-state-map)
+
+  ;;    (define-key org-todo-state-map "x"
+  ;;      #'(lambda nil (interactive) (org-todo "CANCELLED")))
+  ;;    (define-key org-todo-state-map "d"
+  ;;      #'(lambda nil (interactive) (org-todo "DONE")))
+  ;;    (define-key org-todo-state-map "f"
+  ;;      #'(lambda nil (interactive) (org-todo "DEFERRED")))
+  ;;    (define-key org-todo-state-map "l"
+  ;;      #'(lambda nil (interactive) (org-todo "DELEGATED")))
+  ;;    (define-key org-todo-state-map "s"
+  ;;      #'(lambda nil (interactive) (org-todo "STARTED")))
+  ;;    (define-key org-todo-state-map "w"
+  ;;      #'(lambda nil (interactive) (org-todo "WAITING")))
+
+     ;; (define-key org-agenda-mode-map "\C-n" 'next-line)
+     ;; (define-key org-agenda-keymap "\C-n" 'next-line)
+     ;; (define-key org-agenda-mode-map "\C-p" 'previous-line)
+     ;; (define-key org-agenda-keymap "\C-p" 'previous-line))
+)
+
 (defun dotspacemacs/init ()
   "Initialization function.
 This function is called at the very startup of Spacemacs initialization
 before layers configuration.
 You should not put any user code in there besides modifying the variable
 values."
+  (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
@@ -128,7 +152,7 @@ values."
    ;; (default 'vim)
    dotspacemacs-editing-style 'hybrid
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
-   dotspacemacs-verbose-loading nil
+   dotspacemacs-verbose-loading t
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
    ;; banner, `random' chooses a random text banner in `core/banners'
@@ -152,8 +176,8 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(phoenix-dark-mono
-                         spacemacs-dark
-                         spacemacs-ligh)
+                         spacemacs-light
+                         spacemacs-dark)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -185,7 +209,7 @@ values."
    ;; and TAB or <C-m> and RET.
    ;; In the terminal, these pairs are generally indistinguishable, so this only
    ;; works in the GUI. (default nil)
-   dotspacemacs-distinguish-gui-tab nil
+   dotspacemacs-distinguish-gui-tab t
    ;; If non nil `Y' is remapped to `y$' in Evil states. (default nil)
    dotspacemacs-remap-Y-to-y$ nil
    ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
@@ -335,97 +359,164 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-
   (setq create-lockfiles nil)
 
   ;; neotree
-  (setq neo-smart-open t) ;; https://www.emacswiki.org/emacs/NeoTree
+  (global-set-key (kbd "<f8>") 'neotree-toggle)
+  (global-set-key (kbd "<C-f8>") 'neotree-find)
+  (setq neo-smart-open t)
   (setq projectile-switch-project-action 'neotree-projectile-action)
 
   ;; psc-ide
-  ;; (add-hook 'purescript-mode-hook
-  ;;           (lambda ()
-  ;;             (psc-ide-mode)
-  ;;             (company-mode)
-  ;;             (flycheck-mode)
-  ;;             ;; (turn-on-purescript-indentation)
-  ;;             (make-variable-buffer-local 'find-tag-default-function)
-  ;;             (setq find-tag-default-function (lambda () (current-word t t)))
-  ;;           )
-  ;; )
+  (add-hook 'purescript-mode-hook
+            (lambda ()
+              (psc-ide-mode)
+              (company-mode)
+              (flycheck-mode)
+              (turn-on-purescript-indentation)))
   (setq psc-ide-use-npm-bin t)
   ;; (customize-set-variable 'psc-ide-rebuild-on-save t)
 
   ;; haskell-mode
   (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
+  ;; (custom-set-variables '(haskell-stylish-on-save t))
 
-  ;; (windmove-default-keybindings)
-
-  (desktop-save-mode 1)
-  ;; https://github.com/syl20bnr/spacemacs/issues/2222#issuecomment-381845232QQ
-  (xterm-mouse-mode -1)
+  (windmove-default-keybindings)
 
   (unless (display-graphic-p)
     (require 'evil-terminal-cursor-changer)
     (evil-terminal-cursor-changer-activate) ; or (etcc-on)
-  )
-
-  ;; https://github.com/syl20bnr/spacemacs/issues/5936
-  ;; (dotspacemacs-distinguish-gui-tab t)
-
-  ;; (global-set-key (kbd "<C-A>") 'evil-numbers/inc-at-pt)
-  ;; (global-set-key (kbd "<C-a>") 'evil-numbers/dec-at-pt)
-  (indent-guide-global-mode 1)
-  (xclip-mode 1)
+    )
 
   ;; Macros
-  (fset 'haskell_add_language_pragma
-        [?i ?\{ ?- ?# ?  ?L ?a ?n ?a ?\C-? ?\C-? ?\C-? ?A ?N ?G ?U ?A ?G ?E ? ])
-  (global-set-key (kbd "C-c h l") 'haskell_add_language_pragma)
-
-  ;; Reload modules in 'GHCi' buffer
+  ;; Reload modules in 'GHCi' buffer (buffer #1)
   (fset 'ghci-reload
         [escape ?: ?w ?\C-m ?  ?1 ?\C-x ?b ?g ?h ?c ?i ?\C-m ?\C-l ?i ?: ?r ?\C-m escape])
-  (global-set-key (kbd "C-c r") 'ghci-reload)
 
-  ;; Execute last command
+  ;; Execute last command in buffer #1
   (fset 'last-command-repeat
         [escape ?: ?w ?\C-m ?  ?1 ?i ?\C-\[ ?O ?A ?\C-m escape])
   (global-set-key (kbd "C-c l") 'last-command-repeat)
 
-  ;; GHCi-reload
-  (fset 'ghci-reload-2
-        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?2])
-  (global-set-key (kbd "C-c 2 r") 'ghci-reload-2)
-  (fset 'ghci-reload-3
-        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?3])
-  (global-set-key (kbd "C-c 3 r") 'ghci-reload-3)
-  (fset 'ghci-reload-4
-        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?4])
-  (global-set-key (kbd "C-c 4 r") 'ghci-reload-4)
-  (fset 'ghci-reload-5
-        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?5])
-  (global-set-key (kbd "C-c 5 r") 'ghci-reload-5)
-  (fset 'ghci-reload-6
-        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?6])
-  (global-set-key (kbd "C-c 6 r") 'ghci-reload-6)
-  (fset 'ghci-reload-7
-        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?7])
-  (global-set-key (kbd "C-c 7 r") 'ghci-reload-7)
-  (fset 'ghci-reload-8
-        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?8])
-  (global-set-key (kbd "C-c 8 r") 'ghci-reload-8)
-  (fset 'ghci-reload-9
-        [escape ?: ?w ?\C-m ?  ?1 ?i ?: ?r ?\C-m escape ?  ?9])
-  (global-set-key (kbd "C-c 9 r") 'ghci-reload-9)
+  ;; 1. get buffer name: (buffer-name (window-buffer (minibuffer-selected-window)))
+  ;; (fset 'last-command-repeat-return
+  ;;   (let (b (buffer-name (window-buffer (minibuffer-selected-window))))
+  ;;     [escape ?  ?1 ?i up return escape ?  ?b]))
+  ;; (global-set-key (kbd "C-c L") 'last-command-repeat-return)
 
   ;; Key bindings
   (spacemacs/set-leader-keys "jt" 'find-tag)
   (global-set-key (kbd "<f8>") 'neotree-toggle)
   (global-set-key (kbd "<S-f8>") 'neotree)
   (global-set-key (kbd "<C-f8>") 'neotree-find)
+  ;; (define-key key-translation-map (kbd "<f9> u <right>") (kbd "→"))
 
-  )
+  (global-set-key (kbd "C-c r") 'ghci-reload)
+
+  ;; Setting up Fonts for use with Agda/PLFA
+  ;;
+  ;; default to DejaVu Sans Mono,
+  ;; (set-face-attribute 'default nil
+	;; 	                  :family "DejaVu Sans Mono"
+	;; 	                  :height 120
+	;; 	                  :weight 'normal
+	;; 	                  :width  'normal)
+
+  ;; ;; fix \:
+  ;; (set-fontset-font "fontset-default"
+	;; 	                (cons (decode-char 'ucs #x2982)
+	;; 		                    (decode-char 'ucs #x2982))
+	;; 	                "STIX")
+
+  ;; (use-package ormolu
+  ;;   :hook (haskell-mode . ormolu-format-on-save-mode)
+  ;;   :bind
+  ;;   (:map haskell-mode-map
+          ;; ("C-c f" . ormolu-format-buffer)))
+  ;; (push "~/.emacs.d/contrib/reformatter.el" load-path)
+  ;; (push "~/.emacs.d/contrib/ormolu.el" load-path)
+  ;; (load-library "ormolu")
+  ;; (add-hook 'haskell-mode-hook 'ormolu-format-on-save-mode)
+
+  ;; Org mode
+  (setq org-todo-keywords
+        '((sequence "TODO(t!)" "NEXT(n!)" "STARTED(s@/!)" "PAUSED(p@/!)" "BLOCKED(b@/!)" "DELEGATED(D!)" "FOLLOWUP(f!)" "|" "CANCELLED(c!)" "DONE(d@/!)")))
+
+  ;; http://newartisans.com/2007/08/using-org-mode-as-a-day-planner/
+  ;; (add-hook 'remember-mode-hook 'org-remember-apply-template)
+  ;; (define-key global-map [(control meta ?r)] 'remember)
+  (custom-set-variables
+   '(org-agenda-files (quote ("~/Dropbox/Apps/emacs/org/todo.org")))
+   '(org-default-notes-file "~/Dropbox/Apps/emacs/org/notes.org")
+   '(org-agenda-ndays 7)
+   '(org-deadline-warning-days 14)
+   '(org-agenda-show-all-dates t)
+   '(org-agenda-skip-deadline-if-done t)
+   '(org-agenda-skip-scheduled-if-done t)
+   '(org-agenda-start-on-weekday nil)
+   '(org-reverse-note-order t)
+   '(org-fast-tag-selection-single-key (quote expert))
+   '(org-agenda-custom-commands
+     (quote (("d" todo "DELEGATED" nil)
+  	   ("c" todo "DONE|DEFERRED|CANCELLED" nil)
+  	   ("w" todo "WAITING" nil)
+  	   ("W" agenda "" ((org-agenda-ndays 21)))
+  	   ("A" agenda ""
+  	    ((org-agenda-skip-function
+  	      (lambda nil
+  		(org-agenda-skip-entry-if (quote notregexp) "\\=.*\\[#A\\]")))
+  	     (org-agenda-ndays 1)
+  	     (org-agenda-overriding-header "Today's Priority #A tasks: ")))
+  	   ("u" alltodo ""
+  	    ((org-agenda-skip-function
+  	      (lambda nil
+  		(org-agenda-skip-entry-if (quote scheduled) (quote deadline)
+  					  (quote regexp) "\n]+>")))
+  	     (org-agenda-overriding-header "Unscheduled TODO entries: "))))))
+   '(org-remember-store-without-prompt t)
+   '(org-remember-templates
+     (quote ((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
+  	   (110 "* %u %?" "~/notes.org" "Notes"))))
+   ;; '(remember-annotation-functions (quote (org-remember-annotation)))
+   ;; '(remember-handler-functions (quote (org-remember-handler)))
+   )
+   ;; Org configuration
+
+   ;; Org-Roam basic configuration
+   ;; Taken from: https://lucidmanager.org/productivity/taking-notes-with-emacs-org-mode-and-org-roam/
+   (setq org-directory (concat (getenv "HOME") "/Dropbox/Apps/emacs/org/zettelkasten/"))
+
+   (use-package org-roam
+     :after org
+     :init (setq org-roam-v2-ack t) ;; Acknowledge V2 upgrade
+     :custom
+     (org-roam-directory (file-truename org-directory))
+     :config
+     (org-roam-setup)
+     :bind (("C-c n f" . org-roam-node-find)
+            ;; ("C-c n r" . org-roam-node-random)
+            (:map org-mode-map
+                  (("C-c n i" . org-roam-node-insert)
+                   ("C-c n o" . org-id-get-create)
+                   ("C-c n t" . org-roam-tag-add)
+                   ("C-c n a" . org-roam-alias-add)
+                   ("C-c n r" . org-roam-ref-add)
+                   ("C-c n l" . org-roam-buffer-toggle)))))
+
+   (use-package deft
+     :config
+     (setq deft-directory org-directory
+           deft-recursive t
+           deft-strip-summary-regexp ":PROPERTIES:\n\\(.+\n\\)+:END:\n"
+           deft-use-filename-as-title t)
+     :bind ("C-c n d" . deft))
+
+   (use-package org-roam-bibtex
+     :after (org-roam helm-bibtex)
+     :bind (:map org-mode-map ("C-c n b" . orb-note-actions))
+     :config (require 'org-ref))
+   ;; Org-Roam basic configuration
+ )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -437,33 +528,147 @@ you should place your code here."
  '(ag-highlight-search t)
  '(ag-ignore-list
    (quote
-    ("TAGS" ".stack-work/" ".git/" ".psa/" ".pulp-cache/" ".repl/" ".test/")))
- '(ag-reuse-buffers nil)
- '(ag-reuse-window nil)
+    ("TAGS" ".git/" ".stack-work/" "build/" "node_modiles/")))
+ '(ag-project-root-function nil)
+ '(ansi-color-names-vector
+   ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
  '(evil-want-Y-yank-to-eol nil)
- '(helm-ag-fuzzy-match t)
- '(helm-ag-use-agignore t)
- '(indent-guide-global-mode t)
- '(js-indent-level 2)
+ '(org-agenda-custom-commands
+   (quote
+    (("d" todo "DELEGATED" nil)
+     ("c" todo "DONE|DEFERRED|CANCELLED" nil)
+     ("w" todo "WAITING" nil)
+     ("W" agenda ""
+      ((org-agenda-ndays 21)))
+     ("A" agenda ""
+      ((org-agenda-skip-function
+        (lambda nil
+          (org-agenda-skip-entry-if
+           (quote notregexp)
+           "\\=.*\\[#A\\]")))
+       (org-agenda-ndays 1)
+       (org-agenda-overriding-header "Today's Priority #A tasks: ")))
+     ("u" alltodo ""
+      ((org-agenda-skip-function
+        (lambda nil
+          (org-agenda-skip-entry-if
+           (quote scheduled)
+           (quote deadline)
+           (quote regexp)
+           "
+]+>")))
+       (org-agenda-overriding-header "Unscheduled TODO entries: "))))))
+ '(org-agenda-files (quote ("~/Dropbox/Apps/emacs/org/todo.org")))
+ '(org-agenda-ndays 7)
+ '(org-agenda-show-all-dates t)
+ '(org-agenda-skip-deadline-if-done t)
+ '(org-agenda-skip-scheduled-if-done t)
+ '(org-agenda-start-on-weekday nil)
+ '(org-deadline-warning-days 14)
+ '(org-default-notes-file "~/Dropbox/Apps/emacs/org/notes.org")
+ '(org-directory "~/.org")
+ '(org-fast-tag-selection-single-key (quote expert))
+ '(org-pomodoro-play-sounds nil)
+ '(org-remember-store-without-prompt t)
+ '(org-remember-templates
+   (quote
+    ((116 "* TODO %?
+  %u" "~/todo.org" "Tasks")
+     (110 "* %u %?" "~/notes.org" "Notes"))))
+ '(org-reverse-note-order t)
  '(package-selected-packages
    (quote
-    (bazel-mode adoc-mode gnu-elpa-keyring-update markup-faces tide slack typescript-mode org-pomodoro livid-mode json-mode js2-refactor company-tern web-beautify skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode js-doc tern coffee-mode hcl-mode nginx-mode company-anaconda yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode cython-mode anaconda-mode pythonic engine-mode xclip company-web web-mode tagedit slim-mode scss-mode sass-mode pug-mode haml-mode emmet-mode web-completion-data darktooth-theme zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme psci purescript-mode helm-ag sql-indent evil-terminal-cursor-changer simpleclip yaml-mode ws-butler winum volatile-highlights vi-tilde-fringe uuidgen toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode paradox spinner org-bullets open-junk-file move-text lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation google-translate golden-ratio fill-column-indicator fancy-battery eyebrowse expand-region evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu eval-sexp-fu highlight dumb-jump f define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol aggressive-indent adaptive-wrap ace-link org-plus-contrib let-alist plantuml-mode ag psc-ide dash-functional neotree flx-ido smeargle orgit mmm-mode markdown-toc s markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit ghub with-editor company-statistics company-cabal auto-yasnippet ac-ispell auto-complete intero flycheck dash hlint-refactor hindent haskell-snippets yasnippet company-ghci company-ghc ghc company haskell-mode cmm-mode which-key wgrep use-package smex pcre2el macrostep ivy-hydra hydra helm-make helm helm-core popup flx exec-path-from-shell evil-visualstar evil-escape evil goto-chg undo-tree elisp-slime-nav diminish counsel-projectile projectile pkg-info epl counsel swiper ivy bind-map bind-key auto-compile packed async ace-window avy)))
- '(projectile-globally-ignored-files (quote ("TAGS")))
- '(projectile-tags-command "hasktags -eR %s")
- '(psc-ide-add-import-on-completion t t)
- '(psc-ide-output-directory "build/")
- '(psc-ide-port 15375)
+    (web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode cython-mode company-anaconda anaconda-mode pythonic org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download htmlize gnuplot ormolu reformatter web-mode tagedit slim-mode scss-mode sass-mode pug-mode haml-mode emmet-mode company-web web-completion-data sql-indent psci purescript-mode zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme evil-terminal-cursor-changer ws-butler winum volatile-highlights vi-tilde-fringe uuidgen toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode paradox spinner org-bullets open-junk-file move-text lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation google-translate golden-ratio fill-column-indicator fancy-battery eyebrowse expand-region evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu eval-sexp-fu highlight dumb-jump f define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol aggressive-indent adaptive-wrap ace-link yaml-mode evil-surround plantuml-mode ag psc-ide dash-functional neotree flx-ido smeargle orgit mmm-mode markdown-toc s markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit ghub with-editor company-statistics company-cabal auto-yasnippet ac-ispell auto-complete intero flycheck dash hlint-refactor hindent haskell-snippets yasnippet company-ghci company-ghc ghc company haskell-mode cmm-mode which-key wgrep use-package smex pcre2el macrostep ivy-hydra hydra helm-make helm helm-core popup flx exec-path-from-shell evil-visualstar evil-escape evil goto-chg undo-tree elisp-slime-nav diminish counsel-projectile projectile pkg-info epl counsel swiper ivy bind-map bind-key auto-compile packed async ace-window avy)))
+ '(plantuml-jar-path "/Users/futtetennista/.local/bin/plantuml.jar")
  '(psc-ide-rebuild-on-save nil t)
- '(psc-ide-source-globs
-   (quote
-    ("lib/**/*.purs" "apps/**/**/*.purs" "test/**/*.purs" "bower_components/purescript-*/src/**/*.purs")))
- '(safe-local-variable-values
-   (quote
-    ((psc-ide-source-globs "lib/**/*.purs" "apps/public/**/*.purs" "apps/admin/**/*.purs" "apps/funds/**/*/purs" "test/**/*.purs" "bower_components/purescript-*/src/**/*.purs"))))
- '(typescript-indent-level 2))
+ '(remember-annotation-functions (quote (org-remember-annotation)))
+ '(remember-handler-functions (quote (org-remember-handler))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:background nil)))))
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ag-highlight-search t)
+ '(ag-ignore-list '("TAGS" ".git/" ".stack-work/" "build/" "node_modiles/"))
+ '(ag-project-root-function nil)
+ '(ansi-color-names-vector
+   ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
+ '(evil-want-Y-yank-to-eol nil)
+ '(hl-todo-keyword-faces
+   '(("TODO" . "#dc752f")
+     ("NEXT" . "#dc752f")
+     ("THEM" . "#2d9574")
+     ("PROG" . "#4f97d7")
+     ("OKAY" . "#4f97d7")
+     ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f")
+     ("DONE" . "#86dc2f")
+     ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d")
+     ("HACK" . "#b1951d")
+     ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f")
+     ("XXX+" . "#dc752f")
+     ("\\?\\?\\?+" . "#dc752f")))
+ '(org-agenda-custom-commands
+   '(("d" todo "DELEGATED" nil)
+     ("c" todo "DONE|DEFERRED|CANCELLED" nil)
+     ("w" todo "WAITING" nil)
+     ("W" agenda ""
+      ((org-agenda-ndays 21)))
+     ("A" agenda ""
+      ((org-agenda-skip-function
+        (lambda nil
+          (org-agenda-skip-entry-if 'notregexp "\\=.*\\[#A\\]")))
+       (org-agenda-ndays 1)
+       (org-agenda-overriding-header "Today's Priority #A tasks: ")))
+     ("u" alltodo ""
+      ((org-agenda-skip-function
+        (lambda nil
+          (org-agenda-skip-entry-if 'scheduled 'deadline 'regexp "
+]+>")))
+       (org-agenda-overriding-header "Unscheduled TODO entries: ")))))
+ '(org-agenda-files '("~/Dropbox/Apps/emacs/org/todo.org"))
+ '(org-agenda-ndays 7)
+ '(org-agenda-show-all-dates t)
+ '(org-agenda-skip-deadline-if-done t)
+ '(org-agenda-skip-scheduled-if-done t)
+ '(org-agenda-start-on-weekday nil)
+ '(org-deadline-warning-days 14)
+ '(org-default-notes-file "~/Dropbox/Apps/emacs/org/notes.org")
+ '(org-directory "~/.org")
+ '(org-fast-tag-selection-single-key 'expert)
+ '(org-fontify-done-headline nil)
+ '(org-fontify-todo-headline nil)
+ '(org-pomodoro-play-sounds nil)
+ '(org-remember-store-without-prompt t)
+ '(org-remember-templates
+   '((116 "* TODO %?
+  %u" "~/todo.org" "Tasks")
+     (110 "* %u %?" "~/notes.org" "Notes")))
+ '(org-reverse-note-order t)
+ '(package-selected-packages
+   '(org-roam-bibtex web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode cython-mode company-anaconda anaconda-mode pythonic org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download htmlize gnuplot ormolu reformatter web-mode tagedit slim-mode scss-mode sass-mode pug-mode haml-mode emmet-mode company-web web-completion-data sql-indent psci purescript-mode zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme evil-terminal-cursor-changer ws-butler winum volatile-highlights vi-tilde-fringe uuidgen toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode paradox spinner org-bullets open-junk-file move-text lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation google-translate golden-ratio fill-column-indicator fancy-battery eyebrowse expand-region evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu eval-sexp-fu highlight dumb-jump f define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol aggressive-indent adaptive-wrap ace-link yaml-mode evil-surround plantuml-mode ag psc-ide dash-functional neotree flx-ido smeargle orgit mmm-mode markdown-toc s markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit ghub with-editor company-statistics company-cabal auto-yasnippet ac-ispell auto-complete intero flycheck dash hlint-refactor hindent haskell-snippets yasnippet company-ghci company-ghc ghc company haskell-mode cmm-mode which-key wgrep use-package smex pcre2el macrostep ivy-hydra hydra helm-make helm helm-core popup flx exec-path-from-shell evil-visualstar evil-escape evil goto-chg undo-tree elisp-slime-nav diminish counsel-projectile projectile pkg-info epl counsel swiper ivy bind-map bind-key auto-compile packed async ace-window avy))
+ '(pdf-view-midnight-colors '("#b2b2b2" . "#292b2e"))
+ '(plantuml-jar-path "/Users/futtetennista/.local/bin/plantuml.jar")
+ '(psc-ide-rebuild-on-save nil t)
+ '(remember-annotation-functions '(org-remember-annotation))
+ '(remember-handler-functions '(org-remember-handler)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil)))))
+)
