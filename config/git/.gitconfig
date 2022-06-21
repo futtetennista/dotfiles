@@ -8,3 +8,4 @@
 	pr = pull -r -p
 	amend = commit --amend
 	size = count-objects -vH
+	zip = archive --format=zip --output project.zip HEAD
