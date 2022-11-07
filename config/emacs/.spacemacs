@@ -490,13 +490,17 @@ you should place your code here."
 
    ;; Org-Roam basic configuration
    ;; Taken from: https://lucidmanager.org/productivity/taking-notes-with-emacs-org-mode-and-org-roam/
-   (setq org-directory (concat (getenv "HOME") "/Dropbox/Apps/emacs/org/zettelkasten/"))
+
+   ;; (setq org-directory (concat (getenv "HOME") "/Dropbox/Apps/emacs/org/zettelkasten/"))
+   ;; (setq org-roam-directory (file-truename "~/Dropbox/Apps/emacs/org/zettelkasten"))
+   ;; (setq find-file-visit-truename t)
 
    (use-package org-roam
      :after org
      :init (setq org-roam-v2-ack t) ;; Acknowledge V2 upgrade
      :custom
-     (org-roam-directory (file-truename org-directory))
+     (org-roam-directory (concat (getenv "HOME") "/Dropbox/Apps/emacs/org/zettelkasten/"))
+     ;; (org-roam-directory (file-truename org-directory))
      :config
      (org-roam-setup)
      :bind (("C-c n f" . org-roam-node-find)
@@ -517,14 +521,15 @@ you should place your code here."
            deft-use-filename-as-title t)
      :bind ("C-c n d" . deft))
 
-   (use-package org-roam-bibtex
-     :after (org-roam helm-bibtex)
-     :bind (:map org-mode-map ("C-c n b" . orb-note-actions))
-     :config (require 'org-ref))
+   (texfrag-global-mode)
+
+   ;; (use-package org-roam-bibtex
+   ;;   :after (org-roam helm-bibtex)
+   ;;   :bind (:map org-mode-map ("C-c n b" . orb-note-actions))
+   ;;   :config (require 'org-ref))
 
    ;; (require 'org-roam-export)
-   (setq org-roam-directory (file-truename "~/Dropbox/Apps/emacs/org/zettelkasten"))
-   (setq org-id-extra-files (find-lisp-find-files org-roam-directory "\.org$"))
+   ;; (setq org-id-extra-files (find-lisp-find-files org-roam-directory "\.org$"))
    ;; Org-Roam basic configuration
  )
 
