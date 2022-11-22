@@ -1,4 +1,3 @@
-# This is Git's per-user configuration file.
 [alias]
         h = log -p --follow
 	s = status
@@ -9,3 +8,9 @@
 	amend = commit --amend
 	size = count-objects -vH
 	zip = archive --format=zip --output project.zip HEAD
+	undo = reset HEAD~
+        root = rev-parse --show-toplevel
+[push]
+        autoSetupRemote = true
+[rebase]
+        autoStash = true
