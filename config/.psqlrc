@@ -1,0 +1,33 @@
+\encoding UTF8
+
+-- [user]@[host]:[port]/[db]['*' for transactions]['#' for root-like; '>' otherwise]
+\set PROMPT1 '%n@%M:%>/%/%x%# '
+
+\set PROMPT2 '''
+
+\set COMP_KEYWORD_CASE lower
+
+-- Make history ignore all lines entered that were preceded by spaces, and
+-- ignore any entries that matched the previous line entered.
+\set HISTCONTROL ignoreboth
+
+\set HISTFILE ~/.psql_history- :HOST - :DBNAME - :USER
+
+\set HISTSIZE 1000
+
+-- Do NOT automatically commit after every statement.
+\set AUTOCOMMIT off
+
+-- In interactive transactions, allow recovery after errors within
+-- transactions.
+\set ON_ERROR_ROLLBACK interactive
+
+\pset null '[NULL]'
+
+\pset linestyle unicode
+
+\pset border 2
+
+\timing
+
+\i ~/.psqlrc
