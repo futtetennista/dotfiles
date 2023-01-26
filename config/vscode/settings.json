@@ -11,10 +11,8 @@
   "terminal.integrated.inheritEnv": false,
   "notebook.lineNumbers": "on",
   "window.autoDetectColorScheme": true,
-  "editor.minimap.enabled": false,
   "redhat.telemetry.enabled": false,
   "explorer.confirmDragAndDrop": false,
-  "files.trimTrailingWhitespace": true,
 
   "haskell.manageHLS": "GHCup",
   "[haskell]": {
@@ -47,9 +45,60 @@
   "vs-kubernetes": {
     "vscode-kubernetes.minikube-path.mac": "~/.vs-kubernetes/tools/minikube/darwin-amd64/minikube"
   },
+  
+  "editor.renderWhitespace": "all",
+  "editor.minimap.enabled": false,
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  // "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  // "eslint.enable": true,
+  // "eslint.format.enable": true,
+  // "eslint.codeActionsOnSave.mode": "all"
+
+  "files.trimTrailingWhitespace": true,
+  "files.associations": {
+    "*.libjsonnet": "jsonnet",
+    "*.jsonnet": "jsonnet"
+  },
+
+  "[nix]": {
+    "editor.autoIndent": "full"
+  },
+
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "[typescript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.tabSize": 2
+  },
+
+  "[jsonnet]": {
+    "editor.defaultFormatter": "Sebbia.jsonnetng"
+  },
+
+  "plantuml.server": "http://localhost:9090",
+  "plantuml.render": "PlantUMLServer",
+  "[plantuml]": {
+    "editor.tabSize": 2
+  },
+
+  "[go]": {
+    "editor.insertSpaces": false,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    },
+    "editor.suggest.snippetsPreventQuickSuggestions": false
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
   }
 }
