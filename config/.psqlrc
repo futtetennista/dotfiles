@@ -1,9 +1,12 @@
 \encoding UTF8
 
--- [user]@[host]:[port]/[db]['*' for transactions]['#' for root-like; '>' otherwise]
+-- [user]@[host]:[port]/[db]['*' if we are in a transaction]['#' if we are root-like; '>' otherwise]
 \set PROMPT1 '%n@%M:%>/%/%x%# '
 
-\set PROMPT2 '''
+-- Ensure second prompt is empty, to facilitate easier copying
+-- of multiline SQL statements from a psql session into other
+-- tools / text editors.
+\set PROMPT2 ''
 
 \set COMP_KEYWORD_CASE lower
 
@@ -15,11 +18,13 @@
 
 \set HISTSIZE 1000
 
--- Do NOT automatically commit after every statement.
 \set AUTOCOMMIT off
 
+\set --single-transaction
+
 -- In interactive transactions, allow recovery after errors within
--- transactions.
+-- transactions. In non-interactive transactions - e.g. those in piped
+-- input - do not.
 \set ON_ERROR_ROLLBACK interactive
 
 \pset null '[NULL]'
@@ -29,5 +34,3 @@
 \pset border 2
 
 \timing
-
-\i ~/.psqlrc
