@@ -49,6 +49,7 @@
   "json.schemas": [],
   "plantuml.server": "http://localhost:9090",
   "plantuml.render": "PlantUMLServer",
+  "prettier.trailingComma": "all",
   "python.defaultInterpreterPath": "/usr/local/bin/python3",
   "python.analysis.typeCheckingMode": "strict",
   "python.formatting.provider": "autopep8",
