@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.synthace.matrix.docker-system-prune</string>
+	<string>futtetennista.nix-collect-garbage.plist</string>
 	<key>LimitLoadToSessionType</key>
 	<string>Aqua</string>
 	<key>ProgramArguments</key>
