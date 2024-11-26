@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.synthace.matrix.docker-system-prune</string>
+	<key>LimitLoadToSessionType</key>
+	<string>Aqua</string>
+	<key>ProgramArguments</key>
+	<array>
+	  <string>/nix/var/nix/profiles/default/bin/nix-collect-garbage</string>
+	  <string>-d</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StartInterval</key>
+	<integer>604800</integer>
+	<key>StandardErrorPath</key>
+  	<string>/tmp/launch_agent-nix-collect-garbage.std-err</string>
+	<key>StandardOutPath</key>
+  	<string>/tmp/launch_agent-nix-collect-garbage.std-out</string>
+</dict>
+</plist>
